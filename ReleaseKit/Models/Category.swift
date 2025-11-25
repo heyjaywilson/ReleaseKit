@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum Category: String, CaseIterable {
+public enum Category: String, CaseIterable {
   case feature
   case improvements
   case bugFix
@@ -20,6 +20,17 @@ enum Category: String, CaseIterable {
           .teal
       case .bugFix:
           .red
+    }
+  }
+  
+  var sortOrder: Int {
+    switch self {
+      case .feature:
+        0
+      case .improvements:
+        1
+      case .bugFix:
+        2
     }
   }
 }

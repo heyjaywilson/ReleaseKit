@@ -1,0 +1,69 @@
+//
+//  VersionDetailHeader.swift
+//  ReleaseKit
+//
+//  Created by Jay Wilson on 11/25/25.
+//
+
+import SwiftUI
+
+public struct VersionDetailHeader: View {
+  var icon: String?
+  var title: String
+  var versionNumber: String
+  var releaseDate: Date
+  
+  public init(
+    icon: String? = nil,
+    title: String,
+    versionNumber: String,
+    releaseDate: Date
+  ) {
+    self.icon = icon
+    self.title = title
+    self.versionNumber = versionNumber
+    self.releaseDate = releaseDate
+  }
+  
+  public var body: some View {
+    Section {
+      HStack(spacing: 16) {
+        if let icon = icon {
+          ZStack {
+            Circle()
+              .fill(Color.blue.tertiary)
+            Image(systemName: icon)
+              .font(Font.largeTitle)
+          }
+          .frame(width: 80, height: 80)
+        }
+        VStack(alignment: .leading) {
+          Text(title)
+            .font(.largeTitle)
+            .bold()
+          HStack(spacing: 16) {
+            Text("Version \(versionNumber)")
+            Text(releaseDate.formatted(date: .abbreviated, time: .omitted))
+            Spacer()
+          }
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+        }
+      }
+      .listRowBackground(Color.clear)
+    }
+    .listSectionSpacing(0)
+    .listSectionMargins(.leading, 0)
+  }
+}
+
+#Preview {
+  List {
+    VersionDetailHeader(
+      icon: "megaphone",
+      title: "It's alive",
+      versionNumber: "1.0.0",
+      releaseDate: .now
+    )
+  }
+}

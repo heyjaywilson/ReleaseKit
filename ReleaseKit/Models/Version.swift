@@ -7,15 +7,22 @@
 
 import Foundation
 
-struct Version: Identifiable {
+public struct Version: Identifiable {
   /// Identifier for version
-  var id: String { version }
+  public var id: String { version }
   var title: String
   var icon: String?
   var version: String
   var releaseDate: Date
-  /// Entries broken into categories
   var entries: [Entry]
+  
+  public init(title: String, icon: String? = nil, version: String, releaseDate: Date, entries: [Entry]) {
+    self.title = title
+    self.icon = icon
+    self.version = version
+    self.releaseDate = releaseDate
+    self.entries = entries
+  }
   
   var featured: [Entry] {
     entries.filter { $0.isFeatured }
@@ -48,10 +55,10 @@ extension Version {
     version: "1.0.0",
     releaseDate: Date(),
     entries:
-      mockFeatures + [mockImprovements[2]] + [
-        mockBugFixes[1],
-        mockBugFixes[0],
-        mockBugFixes[2],
+      Entry.mockFeatures + [Entry.mockImprovements[2]] + [
+        Entry.mockBugFixes[1],
+        Entry.mockBugFixes[0],
+        Entry.mockBugFixes[2],
       ]
   )
 }

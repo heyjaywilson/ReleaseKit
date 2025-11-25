@@ -7,50 +7,29 @@
 
 import SwiftUI
 
-struct VersionDetailView: View {
+public struct VersionDetail<Content: View>: View {
   let version: Version
-  var body: some View {
+  let content: Content?
+  
+  public init(_ version: Version) where Content == EmptyView {
+    self.version = version
+    self.content = nil
+  }
+  
+  public init(_ version: Version, @ViewBuilder content: () -> Content) {
+    self.version = version
+    self.content = content()
+  }
+  
+  public var body: some View {
     List {
-      HStack(spacing: 16) {
-        if let icon = version.icon {
-          ZStack {
-            Circle()
-              .fill(Color.blue.tertiary)
-            Image(systemName: icon)
-              .font(Font.largeTitle)
-          }
-          .frame(width: 80, height: 80)
-        }
-        VStack(alignment: .leading) {
-          Text(version.title)
-            .font(.largeTitle)
-            .bold()
-          HStack(spacing: 16) {
-            Text("Version \(version.version)")
-            Text(
-              version.releaseDate.formatted(date: .abbreviated, time: .omitted)
-            )
-            Spacer()
-          }
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-        }
-      }
-      .listRowBackground(Color.clear)
-      ForEach(version.featured) { featuredEntry in
-        Section {
-          HStack(alignment: .center, spacing: 16) {
-            if let icon = featuredEntry.icon {
-              Image(systemName: icon)
-            }
-            Text(featuredEntry.text)
-          }
-          .font(.headline)
-          .foregroundStyle(.white)
-          .listRowBackground(featuredEntry.category.featuredBackgroundColor)
-        }
-        .listSectionSpacing(16)
-      }
+      VersionDetailHeader(
+        icon: version.icon,
+        title: version.title,
+        versionNumber: version.version,
+        releaseDate: version.releaseDate
+      )
+      FeaturedSection(entries: version.featured)
       if version.features.isEmpty == false {
         Section {
           ForEach(version.features) { feature in
@@ -78,12 +57,25 @@ struct VersionDetailView: View {
           Text("Fixes")
         }
       }
+      if let content {
+        content
+      }
     }
   }
 }
 
 #if DEBUG
-#Preview {
-  VersionDetailView(version: .mock)
+#Preview("No Content") {
+  VersionDetail(.mock)
+}
+#Preview("Content") {
+  VersionDetail(.mock) {
+    Section {
+      Text("This is another seciton added")
+      Text("to the bottom of the view")
+    } header: {
+      Text("Header")
+    }
+  }
 }
 #endif
