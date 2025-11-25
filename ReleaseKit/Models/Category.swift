@@ -6,31 +6,71 @@
 //
 
 import SwiftUI
+import Foundation
 
-public enum Category: String, CaseIterable {
-  case feature
-  case improvements
-  case bugFix
+/// A category for organizing release notes entries.
+/// Users can create custom categories or use the provided default ones.
+public struct Category: Identifiable, Hashable {
+  /// Unique identifier for the category
+  public let id: String
   
-  var featuredBackgroundColor: Color {
-    switch self {
-      case .feature:
-          .green
-      case .improvements:
-          .teal
-      case .bugFix:
-          .red
-    }
-  }
+  /// Display name for the category
+  let name: String
   
-  var sortOrder: Int {
-    switch self {
-      case .feature:
-        0
-      case .improvements:
-        1
-      case .bugFix:
-        2
-    }
+  /// Background color used when displaying featured entries of this category
+  let featuredBackgroundColor: Color
+  
+  /// Sort order for displaying categories (lower numbers appear first)
+  let sortOrder: Int
+  
+  /// Optional icon name (SF Symbol) for the category
+  let icon: String?
+  
+  public init(
+    id: String,
+    name: String,
+    featuredBackgroundColor: Color,
+    sortOrder: Int,
+    icon: String? = nil
+  ) {
+    self.id = id
+    self.name = name
+    self.featuredBackgroundColor = featuredBackgroundColor
+    self.sortOrder = sortOrder
+    self.icon = icon
   }
+}
+
+/// Default categories
+extension Category {
+  /// Default "Feature" category
+  public static let feature = Category(
+    id: "feature",
+    name: "Features",
+    featuredBackgroundColor: .green,
+    sortOrder: 0
+  )
+  
+  /// Default "Improvements" category
+  public static let improvements = Category(
+    id: "improvements",
+    name: "Improvements",
+    featuredBackgroundColor: .teal,
+    sortOrder: 1
+  )
+  
+  /// Default "Bug Fix" category
+  public static let bugFix = Category(
+    id: "bugFix",
+    name: "Fixes",
+    featuredBackgroundColor: .red,
+    sortOrder: 2
+  )
+  
+  /// All default categories
+  public static let defaults: [Category] = [
+    .feature,
+    .improvements,
+    .bugFix
+  ]
 }

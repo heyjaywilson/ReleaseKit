@@ -30,33 +30,12 @@ public struct VersionDetail<Content: View>: View {
         releaseDate: version.releaseDate
       )
       FeaturedSection(entries: version.featured)
-      if version.features.isEmpty == false {
-        Section {
-          ForEach(version.features) { feature in
-            Text(feature.text)
-          }
-        } header: {
-          Text("Features")
+      ForEach(version.categories) { category in
+        if let entries = version.entriesByCategory[category] {
+          VersionEntriesSection(category: category, entries: entries)
         }
       }
-      if version.improvements.isEmpty == false {
-        Section {
-          ForEach(version.improvements) { improvement in
-            Text(improvement.text)
-          }
-        } header: {
-          Text("Improvements")
-        }
-      }
-      if version.fixes.isEmpty == false {
-        Section {
-          ForEach(version.fixes) { fix in
-            Text(fix.text)
-          }
-        } header: {
-          Text("Fixes")
-        }
-      }
+      
       if let content {
         content
       }

@@ -27,23 +27,15 @@ public struct Version: Identifiable {
   var featured: [Entry] {
     entries.filter { $0.isFeatured }
   }
-  
-  var features: [Entry] {
-    entries
-      .filter { !$0.isFeatured }
-      .filter { $0.category == .feature }
+    
+  /// Get all unique categories from the entries, sorted by sortOrder
+  var categories: [Category] {
+    return Set(entries.map { $0.category }).sorted(by: { $0.sortOrder < $1.sortOrder })
   }
   
-  var improvements: [Entry] {
-    entries
-      .filter { !$0.isFeatured }
-      .filter { $0.category == .improvements }
-  }
-  
-  var fixes: [Entry] {
-    entries
-      .filter { !$0.isFeatured }
-      .filter { $0.category == .bugFix }
+  /// Dictionary of entries grouped by category
+  var entriesByCategory: [Category: [Entry]] {
+    Dictionary(grouping: entries, by: { $0.category })
   }
 }
 
