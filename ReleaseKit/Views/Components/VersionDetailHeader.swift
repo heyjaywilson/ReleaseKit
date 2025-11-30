@@ -26,7 +26,6 @@ public struct VersionDetailHeader: View {
   }
   
   public var body: some View {
-    Section {
       HStack(spacing: 16) {
         if let icon = icon {
           ZStack {
@@ -50,20 +49,30 @@ public struct VersionDetailHeader: View {
           .foregroundStyle(.secondary)
         }
       }
-      .listRowBackground(Color.clear)
-    }
-    .listSectionSpacing(0)
-    .listSectionMargins(.leading, 0)
+      .padding(.vertical)
   }
 }
 
 #Preview {
-  List {
-    VersionDetailHeader(
-      icon: "megaphone",
-      title: "It's alive",
-      versionNumber: "1.0.0",
-      releaseDate: .now
-    )
+  NavigationView {
+    List {
+      Text("Hello")
+    }
+    .toolbar {
+      ToolbarItem(placement: .navigation) {
+        Button("Back", systemImage: "chevron.left") {
+          print("Back")
+        }
+      }
+      ToolbarItem(placement: .largeTitle) {
+        VersionDetailHeader(
+          icon: "megaphone",
+          title: "It's alive",
+          versionNumber: "1.0.0",
+          releaseDate: .now
+        )
+      }
+    }
+    .toolbarTitleDisplayMode(.large)
   }
 }

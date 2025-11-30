@@ -23,12 +23,6 @@ public struct VersionDetail<Content: View>: View {
   
   public var body: some View {
     List {
-      VersionDetailHeader(
-        icon: version.icon,
-        title: version.title,
-        versionNumber: version.version,
-        releaseDate: version.releaseDate
-      )
       FeaturedSection(entries: version.featured)
       ForEach(version.categories) { category in
         if let entries = version.entriesByCategory[category] {
@@ -40,6 +34,17 @@ public struct VersionDetail<Content: View>: View {
         content
       }
     }
+    .toolbar {
+      ToolbarItem(placement: .largeTitle) {
+        VersionDetailHeader(
+          icon: version.icon,
+          title: version.title,
+          versionNumber: version.version,
+          releaseDate: version.releaseDate
+        )
+      }
+    }
+    .toolbarTitleDisplayMode(.inlineLarge)
   }
 }
 
@@ -54,6 +59,25 @@ public struct VersionDetail<Content: View>: View {
       Text("to the bottom of the view")
     } header: {
       Text("Header")
+    }
+  }
+}
+#Preview("NavigationStack") {
+  NavigationView {
+    VersionDetail(.mock) {
+      Section {
+        Text("This is another seciton added")
+        Text("to the bottom of the view")
+      } header: {
+        Text("Header")
+      }
+    }
+    .toolbar {
+      ToolbarItem(placement: .topBarLeading) {
+        Button("Back", systemImage: "chevron.left") {
+          print("Nothing")
+        }
+      }
     }
   }
 }
