@@ -10,6 +10,10 @@ import SwiftUI
 public struct VersionsListView: View {
   let versions: [Version]
   
+  var hasIcons: Bool {
+    versions.contains(where: { $0.icon != nil })
+  }
+  
   public init(versions: [Version]) {
     self.versions = versions
   }
@@ -21,25 +25,27 @@ public struct VersionsListView: View {
           VersionDetail(version)
         } label: {
           HStack(spacing: 16) {
-            Group {
-              if let icon = version.icon {
-                ZStack {
+            if hasIcons {
+              Group {
+                if let icon = version.icon {
+                  ZStack {
+                    Circle()
+                      .fill(Color.blue.tertiary)
+                    Image(systemName: icon)
+                      .font(Font.largeTitle)
+                  }
+                } else {
                   Circle()
-                    .fill(Color.blue.tertiary)
-                  Image(systemName: icon)
-                    .font(Font.largeTitle)
+                    .opacity(0)
                 }
-              } else {
-                Circle()
-                  .opacity(0)
               }
+              .frame(width: 64)
             }
-            .frame(width: 64)
             VStack(alignment: .leading) {
               Text(version.title)
                 .font(.headline)
               HStack {
-                Text("v\(version.id)")
+                Text(localizedString("Version.Prefix", version.version))
                 Spacer()
                 Text(
                   version.releaseDate.formatted(date: .abbreviated, time: .omitted)
@@ -52,12 +58,14 @@ public struct VersionsListView: View {
         
       }
     }
-    .navigationTitle(Text("VersionListView.Title"))
+    .navigationTitle(Text(localizedString("VersionListView.Title")))
   }
 }
 
 #if DEBUG
 #Preview {
-  VersionsListView(versions: Version.mockVersions)
+  NavigationStack {
+    VersionsListView(versions: Version.mockVersions)
+  }
 }
 #endif

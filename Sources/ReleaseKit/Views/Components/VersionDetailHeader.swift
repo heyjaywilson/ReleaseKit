@@ -41,7 +41,7 @@ public struct VersionDetailHeader: View {
             .font(.largeTitle)
             .bold()
           HStack(spacing: 16) {
-            Text("Version \(versionNumber)")
+            Text(localizedString("Version.Prefix", versionNumber))
             Text(releaseDate.formatted(date: .abbreviated, time: .omitted))
             Spacer()
           }

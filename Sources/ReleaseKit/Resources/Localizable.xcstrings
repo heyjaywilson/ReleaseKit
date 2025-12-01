@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Version.Prefix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "v%1$(version)@"
+          }
+        }
+      }
+    },
     "VersionListView.Title" : {
       "extractionState" : "manual",
       "localizations" : {
