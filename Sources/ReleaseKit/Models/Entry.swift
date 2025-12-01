@@ -5,7 +5,7 @@
 //  Created by Jay Wilson on 11/24/25.
 //
 
-public struct Entry: Identifiable {
+public struct Entry: Identifiable, Sendable {
   public var id: String
   var text: String
   var isFeatured: Bool

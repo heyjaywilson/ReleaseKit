@@ -10,7 +10,7 @@ import Foundation
 
 /// A category for organizing release notes entries.
 /// Users can create custom categories or use the provided default ones.
-public struct Category: Identifiable, Hashable {
+public struct Category: Identifiable, Hashable, Sendable {
   /// Unique identifier for the category
   public let id: String
   

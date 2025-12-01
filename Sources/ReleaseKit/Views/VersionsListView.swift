@@ -7,10 +7,14 @@
 
 import SwiftUI
 
-struct VersionsListView: View {
+public struct VersionsListView: View {
   let versions: [Version]
   
-  var body: some View {
+  public init(versions: [Version]) {
+    self.versions = versions
+  }
+  
+  public var body: some View {
     NavigationStack {
       List {
         ForEach(versions) { version in
@@ -49,7 +53,7 @@ struct VersionsListView: View {
           
         }
       }
-      .navigationTitle(Text("Releases"))
+      .navigationTitle(Text("VersionListView.Title"))
     }
   }
 }

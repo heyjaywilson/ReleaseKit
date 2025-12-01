@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct Version: Identifiable {
+public struct Version: Identifiable, Sendable {
   /// Identifier for version
   public var id: String { version }
   var title: String
