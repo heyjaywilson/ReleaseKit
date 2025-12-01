@@ -15,46 +15,44 @@ public struct VersionsListView: View {
   }
   
   public var body: some View {
-    NavigationStack {
-      List {
-        ForEach(versions) { version in
-          NavigationLink {
-            VersionDetail(version)
-          } label: {
-            HStack(spacing: 16) {
-              Group {
-                if let icon = version.icon {
-                  ZStack {
-                    Circle()
-                      .fill(Color.blue.tertiary)
-                    Image(systemName: icon)
-                      .font(Font.largeTitle)
-                  }
-                } else {
+    List {
+      ForEach(versions) { version in
+        NavigationLink {
+          VersionDetail(version)
+        } label: {
+          HStack(spacing: 16) {
+            Group {
+              if let icon = version.icon {
+                ZStack {
                   Circle()
-                    .opacity(0)
+                    .fill(Color.blue.tertiary)
+                  Image(systemName: icon)
+                    .font(Font.largeTitle)
                 }
-              }
-              .frame(width: 64)
-              VStack(alignment: .leading) {
-                Text(version.title)
-                  .font(.headline)
-                HStack {
-                  Text("v\(version.id)")
-                  Spacer()
-                  Text(
-                    version.releaseDate.formatted(date: .abbreviated, time: .omitted)
-                  )
-                }
-                .font(.caption)
+              } else {
+                Circle()
+                  .opacity(0)
               }
             }
+            .frame(width: 64)
+            VStack(alignment: .leading) {
+              Text(version.title)
+                .font(.headline)
+              HStack {
+                Text("v\(version.id)")
+                Spacer()
+                Text(
+                  version.releaseDate.formatted(date: .abbreviated, time: .omitted)
+                )
+              }
+              .font(.caption)
+            }
           }
-          
         }
+        
       }
-      .navigationTitle(Text("VersionListView.Title"))
     }
+    .navigationTitle(Text("VersionListView.Title"))
   }
 }
 
