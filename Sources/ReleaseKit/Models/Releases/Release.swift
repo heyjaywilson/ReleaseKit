@@ -1,5 +1,5 @@
 //
-//  Version.swift
+//  Release.swift
 //  ReleaseKit
 //
 //  Created by Jay Wilson on 11/24/25.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct Version: Identifiable, Sendable {
+public struct Release: Identifiable, Sendable {
   /// Identifier for version
   public var id: String { version }
   var title: String
@@ -41,8 +41,8 @@ public struct Version: Identifiable, Sendable {
 }
 
 #if DEBUG
-extension Version {
-  static let mock: Version = .init(
+extension Release {
+  static let mock: Release = .init(
     title: "It's alive!",
     icon: "megaphone",
     version: "1.0.0",
@@ -55,8 +55,8 @@ extension Version {
       ]
   )
   
-  static let mockVersions: [Version] = [
-    Version(
+  static let mockVersions: [Release] = [
+    Release(
       title: "Winter Update",
       icon: "snowflake",
       version: "2.1.0",
@@ -103,7 +103,7 @@ extension Version {
         )
       ]
     ),
-    Version(
+    Release(
       title: "Spring Release",
       icon: "leaf",
       version: "2.0.0",
@@ -137,7 +137,7 @@ extension Version {
         )
       ]
     ),
-    Version(
+    Release(
       title: "Summer Edition",
       icon: "sun.max",
       version: "1.5.0",

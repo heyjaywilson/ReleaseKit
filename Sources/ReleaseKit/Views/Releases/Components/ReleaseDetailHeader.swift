@@ -1,5 +1,5 @@
 //
-//  VersionDetailHeader.swift
+//  ReleaseDetailHeader.swift
 //  ReleaseKit
 //
 //  Created by Jay Wilson on 11/25/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct VersionDetailHeader: View {
+public struct ReleaseDetailHeader: View {
   var icon: String?
   var title: String
   var versionNumber: String
@@ -65,7 +65,7 @@ public struct VersionDetailHeader: View {
         }
       }
       ToolbarItem(placement: .largeTitle) {
-        VersionDetailHeader(
+        ReleaseDetailHeader(
           icon: "megaphone",
           title: "It's alive",
           versionNumber: "1.0.0",

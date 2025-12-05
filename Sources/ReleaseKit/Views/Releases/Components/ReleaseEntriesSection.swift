@@ -1,5 +1,5 @@
 //
-//  VersionEntriesSection.swift
+//  ReleaseEntriesSection.swift
 //  ReleaseKit
 //
 //  Created by Jay Wilson on 11/25/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct VersionEntriesSection: View {
+public struct ReleaseEntriesSection: View {
   public var category: Category
   public var entries: [Entry]
   
@@ -42,7 +42,7 @@ public struct VersionEntriesSection: View {
 #if DEBUG
 #Preview {
   List {
-    VersionEntriesSection(category: .bugFix, entries: Entry.mockBugFixes)
+    ReleaseEntriesSection(category: .bugFix, entries: Entry.mockBugFixes)
   }
 }
 #endif

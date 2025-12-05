@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-public struct VersionsListView: View {
-  let versions: [Version]
+public struct ReleaseVersionsListView: View {
+  let versions: [Release]
   
   var hasIcons: Bool {
     versions.contains(where: { $0.icon != nil })
   }
   
-  public init(versions: [Version]) {
+  public init(versions: [Release]) {
     self.versions = versions
   }
   
@@ -22,7 +22,7 @@ public struct VersionsListView: View {
     List {
       ForEach(versions) { version in
         NavigationLink {
-          VersionDetail(version)
+          ReleaseDetail(version)
         } label: {
           HStack(spacing: 16) {
             if hasIcons {
@@ -65,7 +65,7 @@ public struct VersionsListView: View {
 #if DEBUG
 #Preview {
   NavigationStack {
-    VersionsListView(versions: Version.mockVersions)
+    ReleaseVersionsListView(versions: Release.mockVersions)
   }
 }
 #endif

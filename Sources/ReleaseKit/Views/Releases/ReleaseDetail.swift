@@ -7,25 +7,25 @@
 
 import SwiftUI
 
-public struct VersionDetail<Content: View>: View {
-  let version: Version
+public struct ReleaseDetail<Content: View>: View {
+  let release: Release
   let content: Content?
   
-  public init(_ version: Version) where Content == EmptyView {
-    self.version = version
+  public init(_ release: Release) where Content == EmptyView {
+    self.release = release
     self.content = nil
   }
   
-  public init(_ version: Version, @ViewBuilder content: () -> Content) {
-    self.version = version
+  public init(_ version: Release, @ViewBuilder content: () -> Content) {
+    self.release = version
     self.content = content()
   }
   
   public var body: some View {
     List {
-      FeaturedSection(entries: version.featured)
-      ForEach(version.categories) { category in
-        if let entries = version.entriesByCategory[category] {
+      FeaturedSection(entries: release.featured)
+      ForEach(release.categories) { category in
+        if let entries = release.entriesByCategory[category] {
           VersionEntriesSection(category: category, entries: entries)
         }
       }
@@ -36,11 +36,11 @@ public struct VersionDetail<Content: View>: View {
     }
     .toolbar {
       ToolbarItem(placement: .largeTitle) {
-        VersionDetailHeader(
-          icon: version.icon,
-          title: version.title,
-          versionNumber: version.version,
-          releaseDate: version.releaseDate
+        ReleaseDetailHeader(
+          icon: release.icon,
+          title: release.title,
+          versionNumber: release.version,
+          releaseDate: release.releaseDate
         )
       }
     }
@@ -50,10 +50,10 @@ public struct VersionDetail<Content: View>: View {
 
 #if DEBUG
 #Preview("No Content") {
-  VersionDetail(.mock)
+  ReleaseDetail(.mock)
 }
 #Preview("Content") {
-  VersionDetail(.mock) {
+  ReleaseDetail(.mock) {
     Section {
       Text("This is another seciton added")
       Text("to the bottom of the view")
@@ -64,7 +64,7 @@ public struct VersionDetail<Content: View>: View {
 }
 #Preview("NavigationStack") {
   NavigationView {
-    VersionDetail(.mock) {
+    ReleaseDetail(.mock) {
       Section {
         Text("This is another seciton added")
         Text("to the bottom of the view")
