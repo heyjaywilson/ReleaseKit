@@ -26,7 +26,7 @@ public struct ReleaseDetail<Content: View>: View {
       FeaturedSection(entries: release.featured)
       ForEach(release.categories) { category in
         if let entries = release.entriesByCategory[category] {
-          VersionEntriesSection(category: category, entries: entries)
+          ReleaseEntriesSection(category: category, entries: entries)
         }
       }
       
