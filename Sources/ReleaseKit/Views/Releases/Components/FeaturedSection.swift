@@ -9,11 +9,11 @@ import SwiftUI
 
 struct FeaturedSection: View {
   var entries: [Entry]
-  
+
   var categorizedEntries: [Entry] {
     entries.sorted { $0.category.sortOrder < $1.category.sortOrder }
   }
-  
+
   var body: some View {
     Group {
       ForEach(categorizedEntries) { entry in
@@ -26,7 +26,7 @@ struct FeaturedSection: View {
           }
           .font(.headline)
           .foregroundStyle(.white)
-        .listRowBackground(entry.category.featuredBackgroundColor)
+          .listRowBackground(entry.category.featuredBackgroundColor)
         }
         .listSectionSpacing(12)
       }

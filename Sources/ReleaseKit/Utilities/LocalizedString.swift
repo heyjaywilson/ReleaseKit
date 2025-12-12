@@ -12,19 +12,20 @@ func localizedString(_ key: String, _ args: CVarArg...) -> String {
   let format: String
   if !mainString.isEmpty && mainString != key {
     format = mainString
-  } else {
+  }
+  else {
     format = NSLocalizedString(key, bundle: .module, value: "", comment: "")
   }
   return String(format: format, arguments: args)
 }
-
 
 func localizedString(_ key: String) -> String {
   let mainString = NSLocalizedString(key, bundle: .main, value: "", comment: "")
   let format: String
   if !mainString.isEmpty && mainString != key {
     format = mainString
-  } else {
+  }
+  else {
     format = NSLocalizedString(key, bundle: .module, value: "", comment: "")
   }
   return String(format: format)

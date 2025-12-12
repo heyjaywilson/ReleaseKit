@@ -4,22 +4,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "ReleaseKit",
-    platforms: [.iOS(.v26), .macOS(.v26)],
-    products: [
-        .library(
-            name: "ReleaseKit",
-            targets: ["ReleaseKit"]
-        ),
-    ],
-    targets: [
-        .target(
-            name: "ReleaseKit",
-            resources: [.process("Resources")]
-        ),
-        .testTarget(
-            name: "ReleaseKitTests",
-            dependencies: ["ReleaseKit"]
-        ),
-    ]
+  name: "ReleaseKit",
+  platforms: [.iOS(.v26), .macOS(.v26)],
+  products: [
+    .library(
+      name: "ReleaseKit",
+      targets: ["ReleaseKit"]
+    )
+  ],
+  targets: [
+    .target(
+      name: "ReleaseKit",
+      resources: [.process("Resources")]
+    ),
+    .testTarget(
+      name: "ReleaseKitTests",
+      dependencies: ["ReleaseKit"]
+    ),
+  ]
 )

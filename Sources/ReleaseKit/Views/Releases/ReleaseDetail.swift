@@ -10,17 +10,17 @@ import SwiftUI
 public struct ReleaseDetail<Content: View>: View {
   let release: Release
   let content: Content?
-  
+
   public init(_ release: Release) where Content == EmptyView {
     self.release = release
     self.content = nil
   }
-  
+
   public init(_ version: Release, @ViewBuilder content: () -> Content) {
     self.release = version
     self.content = content()
   }
-  
+
   public var body: some View {
     List {
       FeaturedSection(entries: release.featured)
@@ -29,7 +29,7 @@ public struct ReleaseDetail<Content: View>: View {
           ReleaseEntriesSection(category: category, entries: entries)
         }
       }
-      
+
       if let content {
         content
       }
@@ -49,21 +49,10 @@ public struct ReleaseDetail<Content: View>: View {
 }
 
 #if DEBUG
-#Preview("No Content") {
-  ReleaseDetail(.mock)
-}
-#Preview("Content") {
-  ReleaseDetail(.mock) {
-    Section {
-      Text("This is another seciton added")
-      Text("to the bottom of the view")
-    } header: {
-      Text("Header")
-    }
+  #Preview("No Content") {
+    ReleaseDetail(.mock)
   }
-}
-#Preview("NavigationStack") {
-  NavigationView {
+  #Preview("Content") {
     ReleaseDetail(.mock) {
       Section {
         Text("This is another seciton added")
@@ -72,13 +61,24 @@ public struct ReleaseDetail<Content: View>: View {
         Text("Header")
       }
     }
-    .toolbar {
-      ToolbarItem(placement: .topBarLeading) {
-        Button("Back", systemImage: "chevron.left") {
-          print("Nothing")
+  }
+  #Preview("NavigationStack") {
+    NavigationView {
+      ReleaseDetail(.mock) {
+        Section {
+          Text("This is another seciton added")
+          Text("to the bottom of the view")
+        } header: {
+          Text("Header")
+        }
+      }
+      .toolbar {
+        ToolbarItem(placement: .topBarLeading) {
+          Button("Back", systemImage: "chevron.left") {
+            print("Nothing")
+          }
         }
       }
     }
   }
-}
 #endif

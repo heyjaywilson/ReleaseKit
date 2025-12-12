@@ -6,24 +6,24 @@ import UIKit
 public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendable where P.V == V {
   /// Current upgrade state
   public private(set) var state: UpgradeState<V> = .upToDate
-  
+
   /// Current version of the app
   public let currentVersion: V
-  
+
   private let provider: P
   /// Used to store the last seen version
   private let userDefaults: UserDefaults
   private let lastCheckKey = "VersionUpgradeService.lastCheckDate"
   private let cachedRequirementsKey = "VersionUpgradeService.cachedRequirements"
-  
+
   private var lastCheckDate: Date? {
     get { userDefaults.object(forKey: lastCheckKey) as? Date }
     set { userDefaults.set(newValue, forKey: lastCheckKey) }
   }
-  
+
   private var foregroundObserver: NSObjectProtocol?
   private var intervalTask: Task<Void, Never>?
-  
+
   /// Initializes the version upgrade service
   /// - Parameters:
   ///   - provider: Provider for fetching version requirements
@@ -35,7 +35,8 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
     userDefaults: UserDefaults = .standard
   ) {
     guard let versionString = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
-          let version = V(string: versionString) else {
+      let version = V(string: versionString)
+    else {
       fatalError("Unable to read app version from Bundle")
     }
     self.init(
@@ -45,7 +46,7 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
       userDefaults: userDefaults
     )
   }
-  
+
   /// Internal initializer for testing
   /// - Parameters:
   ///   - currentVersion: The current version of the app
@@ -61,24 +62,25 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
     self.currentVersion = currentVersion
     self.provider = provider
     self.userDefaults = userDefaults
-    
+
     do {
       if let requirements = try loadCachedRequirements() {
         try cacheRequirements(requirements)
       }
-    } catch {
+    }
+    catch {
       handleError(error: error)
     }
-    
+
     if let interval = startChecking {
       startAutomaticChecking(interval: interval)
     }
   }
-  
+
   deinit {
     stopAutomaticChecking()
   }
-  
+
   /// Manually check for updates
   public func checkForUpdates() async {
     do {
@@ -86,17 +88,18 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
       updateState(with: requirements)
       lastCheckDate = .now
       try cacheRequirements(requirements)
-    } catch {
+    }
+    catch {
       handleError(error: error)
     }
   }
-  
+
   /// Performs a check and returns the resulting state
   public func checkAndGetState() async -> UpgradeState<V> {
     await checkForUpdates()
     return state
   }
-  
+
   /// Starts automatic version checking
   public func startAutomaticChecking(interval: CheckInterval) {
     // Stop any automatic checking
@@ -111,18 +114,18 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
         break
     }
   }
-  
+
   /// Stops automatic version checking
   public func stopAutomaticChecking() {
     if let observer = foregroundObserver {
       NotificationCenter.default.removeObserver(observer)
       foregroundObserver = nil
     }
-    
+
     intervalTask?.cancel()
     intervalTask = nil
   }
-  
+
   private func setupForegroundObserver() {
     foregroundObserver = NotificationCenter.default
       .addObserver(
@@ -135,7 +138,7 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
         }
       }
   }
-  
+
   private func setupIntervalTask(_ interval: TimeInterval) {
     intervalTask = Task {
       while !Task.isCancelled {
@@ -144,39 +147,42 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
       }
     }
   }
-  
+
   private func updateState(with requirements: VersionRequirement<V>) {
     if currentVersion < requirements.requiredVersion {
       state = .updateRequired(requiredVersion: requirements.requiredVersion)
-    } else if currentVersion < requirements.latestVersion {
+    }
+    else if currentVersion < requirements.latestVersion {
       state = .updateAvailable(latestVersion: requirements.latestVersion)
-    } else {
+    }
+    else {
       state = .upToDate
     }
   }
-  
+
   private func cacheRequirements(_ requirements: VersionRequirement<V>) throws {
     let encoded = try JSONEncoder().encode(requirements)
     userDefaults.set(encoded, forKey: cachedRequirementsKey)
   }
-  
+
   private func handleError(error: Error) {
     if let cachedRequirements = try? loadCachedRequirements() {
       updateState(with: cachedRequirements)
-    } else {
+    }
+    else {
       let upgradeError: UpgradeError
       if let err = error as? UpgradeError {
         upgradeError = err
-      } else {
+      }
+      else {
         upgradeError = .providerError(error.localizedDescription)
       }
       state = .error(error: upgradeError)
     }
   }
-  
+
   private func loadCachedRequirements() throws -> VersionRequirement<V>? {
     guard let data = userDefaults.data(forKey: cachedRequirementsKey) else { return nil }
     return try JSONDecoder().decode(VersionRequirement<V>.self, from: data)
   }
 }
-

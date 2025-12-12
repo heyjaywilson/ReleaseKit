@@ -12,7 +12,7 @@ public struct ReleaseDetailHeader: View {
   var title: String
   var versionNumber: String
   var releaseDate: Date
-  
+
   public init(
     icon: String? = nil,
     title: String,
@@ -24,32 +24,32 @@ public struct ReleaseDetailHeader: View {
     self.versionNumber = versionNumber
     self.releaseDate = releaseDate
   }
-  
+
   public var body: some View {
-      HStack(spacing: 16) {
-        if let icon = icon {
-          ZStack {
-            Circle()
-              .fill(Color.blue.tertiary)
-            Image(systemName: icon)
-              .font(Font.largeTitle)
-          }
-          .frame(width: 80, height: 80)
+    HStack(spacing: 16) {
+      if let icon = icon {
+        ZStack {
+          Circle()
+            .fill(Color.blue.tertiary)
+          Image(systemName: icon)
+            .font(Font.largeTitle)
         }
-        VStack(alignment: .leading) {
-          Text(title)
-            .font(.largeTitle)
-            .bold()
-          HStack(spacing: 16) {
-            Text(localizedString("Version.Prefix", versionNumber))
-            Text(releaseDate.formatted(date: .abbreviated, time: .omitted))
-            Spacer()
-          }
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-        }
+        .frame(width: 80, height: 80)
       }
-      .padding(.vertical)
+      VStack(alignment: .leading) {
+        Text(title)
+          .font(.largeTitle)
+          .bold()
+        HStack(spacing: 16) {
+          Text(localizedString("Version.Prefix", versionNumber))
+          Text(releaseDate.formatted(date: .abbreviated, time: .omitted))
+          Spacer()
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+      }
+    }
+    .padding(.vertical)
   }
 }
 

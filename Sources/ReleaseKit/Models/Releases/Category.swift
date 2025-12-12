@@ -5,27 +5,27 @@
 //  Created by Jay Wilson on 11/24/25.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// A category for organizing release notes entries.
 /// Users can create custom categories or use the provided default ones.
 public struct Category: Identifiable, Hashable, Sendable {
   /// Unique identifier for the category
   public let id: String
-  
+
   /// Display name for the category
   let name: String
-  
+
   /// Background color used when displaying featured entries of this category
   let featuredBackgroundColor: Color
-  
+
   /// Sort order for displaying categories (lower numbers appear first)
   let sortOrder: Int
-  
+
   /// Optional icon name (SF Symbol) for the category
   let icon: String?
-  
+
   public init(
     id: String,
     name: String,
@@ -50,7 +50,7 @@ extension Category {
     featuredBackgroundColor: .green,
     sortOrder: 0
   )
-  
+
   /// Default "Improvements" category
   public static let improvements = Category(
     id: "improvements",
@@ -58,7 +58,7 @@ extension Category {
     featuredBackgroundColor: .teal,
     sortOrder: 1
   )
-  
+
   /// Default "Bug Fix" category
   public static let bugFix = Category(
     id: "bugFix",
@@ -66,11 +66,11 @@ extension Category {
     featuredBackgroundColor: .red,
     sortOrder: 2
   )
-  
+
   /// All default categories
   public static let defaults: [Category] = [
     .feature,
     .improvements,
-    .bugFix
+    .bugFix,
   ]
 }

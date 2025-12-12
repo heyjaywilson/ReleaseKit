@@ -9,15 +9,15 @@ import SwiftUI
 
 public struct ReleaseVersionsListView: View {
   let versions: [Release]
-  
+
   var hasIcons: Bool {
     versions.contains(where: { $0.icon != nil })
   }
-  
+
   public init(versions: [Release]) {
     self.versions = versions
   }
-  
+
   public var body: some View {
     List {
       ForEach(versions) { version in
@@ -34,7 +34,8 @@ public struct ReleaseVersionsListView: View {
                     Image(systemName: icon)
                       .font(Font.largeTitle)
                   }
-                } else {
+                }
+                else {
                   Circle()
                     .opacity(0)
                 }
@@ -55,7 +56,7 @@ public struct ReleaseVersionsListView: View {
             }
           }
         }
-        
+
       }
     }
     .navigationTitle(Text(localizedString("VersionListView.Title")))
@@ -63,9 +64,9 @@ public struct ReleaseVersionsListView: View {
 }
 
 #if DEBUG
-#Preview {
-  NavigationStack {
-    ReleaseVersionsListView(versions: Release.mockVersions)
+  #Preview {
+    NavigationStack {
+      ReleaseVersionsListView(versions: Release.mockVersions)
+    }
   }
-}
 #endif
