@@ -53,114 +53,160 @@ Then add ReleaseKit as a dependency to your target:
 
 ## Usage
 
-### Basic Version Checking
+ReleaseKit provides two main features: displaying release notes and managing version upgrades.
+
+### Displaying Release Notes
+
+Create release objects and display them using the built-in views:
 
 ```swift
 import ReleaseKit
-
-// Create a version provider (implement VersionProvider protocol)
-let provider = YourVersionProvider()
-
-// Initialize the service with automatic checking on foreground
-let upgradeService = VersionUpgradeService(
-    provider: provider,
-    checkInterval: .onForeground
-)
-
-// Check for updates manually
-await upgradeService.checkForUpdates()
-
-// Access the current state
-switch upgradeService.state {
-case .upToDate:
-    print("App is up to date")
-case .updateAvailable(let version):
-    print("Update available: \(version)")
-case .updateRequired(let version):
-    print("Update required: \(version)")
-case .error(let error):
-    print("Error checking for updates: \(error)")
-}
-```
-
-### Using with SwiftUI
-
-```swift
 import SwiftUI
-import ReleaseKit
+
+let releases = [
+    Release(
+        title: "Winter Update",
+        icon: "snowflake",
+        version: "2.1.0",
+        releaseDate: Date(),
+        entries: [
+            Entry(
+                id: "1",
+                text: "New dark mode theme",
+                isFeatured: true,
+                icon: "moon.stars",
+                category: Category(
+                    id: "features",
+                    name: "New Features",
+                    featuredBackgroundColor: .purple,
+                    sortOrder: 1,
+                    icon: "star"
+                )
+            )
+        ]
+    )
+]
 
 struct ContentView: View {
-    @State private var upgradeService: VersionUpgradeService<SemanticVersion, YourVersionProvider>
-    
-    init() {
-        let provider = YourVersionProvider()
-        _upgradeService = State(initialValue: VersionUpgradeService(
-            provider: provider,
-            checkInterval: .onForeground
-        ))
-    }
-    
     var body: some View {
-        VStack {
-            switch upgradeService.state {
-            case .upToDate:
-                Text("Your app is up to date!")
-            case .updateAvailable(let version):
-                UpdateAvailableView(version: version)
-            case .updateRequired(let version):
-                UpdateRequiredView(version: version)
-            case .error(let error):
-                ErrorView(error: error)
-            }
+        NavigationStack {
+            ReleaseVersionsListView(versions: releases)
         }
     }
 }
 ```
 
-### Custom Version Provider
+### Version Upgrade Management
 
-Implement the `VersionProvider` protocol to define your version checking logic:
+To use the version upgrade service, implement a version provider:
+
+#### Step 1: Create a Version Provider
+
+Implement `VersionProvider` to fetch version requirements from your server:
 
 ```swift
 import ReleaseKit
 
-struct MyVersionProvider: VersionProvider {
-    typealias V = SemanticVersion
-    
-    func fetchRequirement() async throws -> VersionRequirement<SemanticVersion> {
-        // Fetch version requirements from your server
-        let response = try await URLSession.shared.data(from: yourURL)
-        // Parse and return version requirement
+struct AppVersionProvider: VersionProvider {
+    func fetchVersionRequirements() async throws -> VersionRequirement<SemanticVersion> {
+        let url = URL(string: "https://api.yourapp.com/version")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        // Example JSON response: 
+        // {"minimum": "1.2.0", "recommended": "1.3.0"}
+        let json = try JSONDecoder().decode(VersionResponse.self, from: data)
+        
         return VersionRequirement(
-            minimumVersion: SemanticVersion(major: 1, minor: 2, patch: 0),
-            recommendedVersion: SemanticVersion(major: 1, minor: 3, patch: 0)
+            minimumVersion: SemanticVersion(major: json.minimum.major, minor: json.minimum.minor, patch: json.minimum.patch),
+            recommendedVersion: SemanticVersion(major: json.recommended.major, minor: json.recommended.minor, patch: json.recommended.patch)
         )
+    }
+}
+
+struct VersionResponse: Codable {
+    let minimum: VersionData
+    let recommended: VersionData
+}
+
+struct VersionData: Codable {
+    let major: Int
+    let minor: Int
+    let patch: Int
+}
+```
+
+#### Step 2: Use in Your App
+
+Add the upgrade service to your main app view:
+
+```swift
+import SwiftUI
+import ReleaseKit
+
+@main
+struct MyApp: App {
+    @State private var upgradeService = VersionUpgradeService(
+        provider: AppVersionProvider(),
+        checkInterval: .onForeground
+    )
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .overlay {
+                    if case .updateRequired(let version) = upgradeService.state {
+                        UpdateRequiredView(version: version)
+                    }
+                }
+                .alert("Update Available", isPresented: .constant(isUpdateAvailable)) {
+                    Button("Update") { openAppStore() }
+                    Button("Later", role: .cancel) { }
+                } message: {
+                    if case .updateAvailable(let version) = upgradeService.state {
+                        Text("Version \(version.stringValue) is available")
+                    }
+                }
+        }
+    }
+    
+    private var isUpdateAvailable: Bool {
+        if case .updateAvailable = upgradeService.state {
+            return true
+        }
+        return false
+    }
+    
+    private func openAppStore() {
+        // Open your app's App Store page
     }
 }
 ```
 
-### Check Intervals
+#### Check Intervals
 
-Configure how often ReleaseKit checks for updates:
+Configure how often the service checks for updates:
 
 ```swift
-// Check every time app enters foreground
-let service = VersionUpgradeService(
-    provider: provider,
-    checkInterval: .onForeground
-)
+// Check every time app enters foreground (default)
+VersionUpgradeService(provider: provider, checkInterval: .onForeground)
 
-// Check at a specific time interval (in seconds)
-let service = VersionUpgradeService(
-    provider: provider,
-    checkInterval: .interval(3600) // Check every hour
-)
+// Check every hour
+VersionUpgradeService(provider: provider, checkInterval: .interval(3600))
 
 // Manual checking only
-let service = VersionUpgradeService(
-    provider: provider,
-    checkInterval: .manual
-)
+VersionUpgradeService(provider: provider, checkInterval: .manual)
+```
+
+#### Manual Checking
+
+Trigger an update check manually:
+
+```swift
+Button("Check for Updates") {
+    Task {
+        await upgradeService.checkForUpdates()
+    }
+}
 ```
 
 ## Contributing
