@@ -2,7 +2,7 @@
 ///
 /// requiredVersion: The version that is required to use the app
 /// latestVersion: The version that is the latest version of the app
-public struct VersionRequirement<V: Version>: Codable {
+public struct VersionRequirement<V: Version>: Codable, Sendable {
   public let requiredVersion: V
   public let latestVersion: V
 

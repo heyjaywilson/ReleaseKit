@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "ReleaseKit",
-  platforms: [.iOS(.v26), .macOS(.v26)],
+  platforms: [.iOS(.v26)],
   products: [
     .library(
       name: "ReleaseKit",

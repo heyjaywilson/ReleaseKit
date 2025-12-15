@@ -2,37 +2,33 @@ import Foundation
 import UIKit
 
 /// Service for managing version upgrades
+/// This is a MainActor-isolated observable class that coordinates UI state updates
+/// and delegates actual version checking to a VersionChecker actor
+@MainActor
 @Observable
-public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendable where P.V == V {
+public final class VersionUpgradeService<V: Version, P: VersionProvider> where P.V == V {
   /// Current upgrade state
   public private(set) var state: UpgradeState<V> = .upToDate
 
   /// Current version of the app
-  public let currentVersion: V
-
-  private let provider: P
-  /// Used to store the last seen version
-  private let userDefaults: UserDefaults
-  private let lastCheckKey = "VersionUpgradeService.lastCheckDate"
-  private let cachedRequirementsKey = "VersionUpgradeService.cachedRequirements"
-
-  private var lastCheckDate: Date? {
-    get { userDefaults.object(forKey: lastCheckKey) as? Date }
-    set { userDefaults.set(newValue, forKey: lastCheckKey) }
+  public var currentVersion: V {
+    checker.currentVersion
   }
 
+  private let checker: VersionChecker<V, P>
   private var foregroundObserver: NSObjectProtocol?
   private var intervalTask: Task<Void, Never>?
 
-  /// Initializes the version upgrade service
+  /// Initializes the version upgrade service based on the short version string in the bundle
+  ///
   /// - Parameters:
   ///   - provider: Provider for fetching version requirements
   ///   - checkInterval: How frequently to check for updates (default: onForeground)
-  ///   - userDefaults: UserDefaults instance for persistence (default: .standard)
+  ///   - suiteName: Optional UserDefaults suite name for persistence (default: nil, uses standard)
   public convenience init(
     provider: P,
     checkInterval: CheckInterval = .onForeground,
-    userDefaults: UserDefaults = .standard
+    suiteName: String? = nil
   ) {
     guard let versionString = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
       let version = V(string: versionString)
@@ -43,54 +39,48 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
       currentVersion: version,
       provider: provider,
       startChecking: checkInterval,
-      userDefaults: userDefaults
+      suiteName: suiteName
     )
   }
 
-  /// Internal initializer for testing
+  /// Initializes the version upgrade service based on the version given
+  ///
+  /// Use this when you do not want to use the short version string in the bundle
   /// - Parameters:
   ///   - currentVersion: The current version of the app
   ///   - provider: Provider for fetching version requirements
   ///   - startChecking: Optional check interval to start automatically (default: nil)
-  ///   - userDefaults: UserDefaults instance for persistence (default: .standard)
-  internal init(
+  ///   - suiteName: Optional UserDefaults suite name for persistence (default: nil, uses standard)
+  public init(
     currentVersion: V,
     provider: P,
     startChecking: CheckInterval? = nil,
-    userDefaults: UserDefaults = .standard
+    suiteName: String? = nil
   ) {
-    self.currentVersion = currentVersion
-    self.provider = provider
-    self.userDefaults = userDefaults
-
-    do {
-      if let requirements = try loadCachedRequirements() {
-        try cacheRequirements(requirements)
-      }
-    }
-    catch {
-      handleError(error: error)
-    }
+    self.checker = VersionChecker(
+      currentVersion: currentVersion,
+      provider: provider,
+      suiteName: suiteName
+    )
 
     if let interval = startChecking {
       startAutomaticChecking(interval: interval)
     }
-  }
 
-  deinit {
-    stopAutomaticChecking()
+    // Load cached state asynchronously after initialization
+    Task {
+      self.state = await checker.getCachedState()
+    }
   }
 
   /// Manually check for updates
   public func checkForUpdates() async {
     do {
-      let requirements = try await provider.fetchVersionRequirements()
-      updateState(with: requirements)
-      lastCheckDate = .now
-      try cacheRequirements(requirements)
+      state = try await checker.check()
     }
     catch {
-      handleError(error: error)
+      // On error, fall back to cached state
+      state = await handleError(error: error)
     }
   }
 
@@ -148,41 +138,23 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider>: Sendab
     }
   }
 
-  private func updateState(with requirements: VersionRequirement<V>) {
-    if currentVersion < requirements.requiredVersion {
-      state = .updateRequired(requiredVersion: requirements.requiredVersion)
+  private func handleError(error: Error) async -> UpgradeState<V> {
+    // Try to get cached state from checker
+    let cachedState = await checker.getCachedState()
+
+    // If cached state is not .upToDate, use it
+    if cachedState != .upToDate {
+      return cachedState
     }
-    else if currentVersion < requirements.latestVersion {
-      state = .updateAvailable(latestVersion: requirements.latestVersion)
+
+    // Otherwise, return error state
+    let upgradeError: UpgradeError
+    if let err = error as? UpgradeError {
+      upgradeError = err
     }
     else {
-      state = .upToDate
+      upgradeError = .providerError(error.localizedDescription)
     }
-  }
-
-  private func cacheRequirements(_ requirements: VersionRequirement<V>) throws {
-    let encoded = try JSONEncoder().encode(requirements)
-    userDefaults.set(encoded, forKey: cachedRequirementsKey)
-  }
-
-  private func handleError(error: Error) {
-    if let cachedRequirements = try? loadCachedRequirements() {
-      updateState(with: cachedRequirements)
-    }
-    else {
-      let upgradeError: UpgradeError
-      if let err = error as? UpgradeError {
-        upgradeError = err
-      }
-      else {
-        upgradeError = .providerError(error.localizedDescription)
-      }
-      state = .error(error: upgradeError)
-    }
-  }
-
-  private func loadCachedRequirements() throws -> VersionRequirement<V>? {
-    guard let data = userDefaults.data(forKey: cachedRequirementsKey) else { return nil }
-    return try JSONDecoder().decode(VersionRequirement<V>.self, from: data)
+    return .error(error: upgradeError)
   }
 }
