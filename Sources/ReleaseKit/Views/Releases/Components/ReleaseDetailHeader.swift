@@ -53,7 +53,8 @@ public struct ReleaseDetailHeader: View {
   }
 }
 
-#Preview {
+@available(iOS 26)
+#Preview("iOS 26") {
   NavigationView {
     List {
       Text("Hello")

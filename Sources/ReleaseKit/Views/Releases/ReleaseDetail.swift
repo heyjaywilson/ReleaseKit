@@ -22,6 +22,28 @@ public struct ReleaseDetail<Content: View>: View {
   }
 
   public var body: some View {
+    if #available(iOS 26, *) {
+      listContent
+        .toolbar {
+          ToolbarItem(placement: .largeTitle) {
+            ReleaseDetailHeader(
+              icon: release.icon,
+              title: release.title,
+              versionNumber: release.version,
+              releaseDate: release.releaseDate
+            )
+          }
+        }
+        .toolbarTitleDisplayMode(.inlineLarge)
+    }
+    else {
+      listContent
+        .navigationTitle(Text(release.title))
+    }
+  }
+
+  @ViewBuilder
+  private var listContent: some View {
     List {
       FeaturedSection(entries: release.featured)
       ForEach(release.categories) { category in
@@ -34,24 +56,23 @@ public struct ReleaseDetail<Content: View>: View {
         content
       }
     }
-    .toolbar {
-      ToolbarItem(placement: .largeTitle) {
-        ReleaseDetailHeader(
-          icon: release.icon,
-          title: release.title,
-          versionNumber: release.version,
-          releaseDate: release.releaseDate
+    .overlay {
+      if release.entries.isEmpty {
+        ContentUnavailableView(
+          "No Release Notes",
+          systemImage: "list.bullet.clipboard",
+          description: Text("No release notes found for \(release.version)")
         )
       }
     }
-    .toolbarTitleDisplayMode(.inlineLarge)
   }
 }
 
 #if DEBUG
   #Preview("No Content") {
-    ReleaseDetail(.mock)
+    ReleaseDetail(.init(title: "Test", version: "1.0.0", releaseDate: .now, entries: []))
   }
+
   #Preview("Content") {
     ReleaseDetail(.mock) {
       Section {
