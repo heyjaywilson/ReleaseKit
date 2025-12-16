@@ -39,6 +39,7 @@ public struct ReleaseDetail<Content: View>: View {
     else {
       listContent
         .navigationTitle(Text(release.title))
+        .navigationBarTitleDisplayMode(.large)
     }
   }
 

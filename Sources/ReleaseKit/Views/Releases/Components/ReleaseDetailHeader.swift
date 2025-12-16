@@ -35,10 +35,11 @@ public struct ReleaseDetailHeader: View {
             .font(Font.largeTitle)
         }
         .frame(width: 80, height: 80)
+        .fixedSize()
       }
       VStack(alignment: .leading) {
         Text(title)
-          .font(.largeTitle)
+          .font(.title)
           .bold()
         HStack(spacing: 16) {
           Text(localizedString("Version.Prefix", versionNumber))
@@ -50,6 +51,7 @@ public struct ReleaseDetailHeader: View {
       }
     }
     .padding(.vertical)
+    .fixedSize(horizontal: false, vertical: true)
   }
 }
 
