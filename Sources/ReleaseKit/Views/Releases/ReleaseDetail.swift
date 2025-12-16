@@ -34,7 +34,7 @@ public struct ReleaseDetail<Content: View>: View {
             )
           }
         }
-        .toolbarTitleDisplayMode(.inlineLarge)
+        .toolbarTitleDisplayMode(.large)
     }
     else {
       listContent
