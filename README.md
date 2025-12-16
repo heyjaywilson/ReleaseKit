@@ -1,7 +1,7 @@
 # ReleaseKit
 
 [![Swift Version](https://img.shields.io/badge/Swift-6.2+-orange.svg)](https://swift.org)
-[![iOS Version](https://img.shields.io/badge/iOS-26.0+-blue.svg)](https://www.apple.com/ios)
+[![iOS Version](https://img.shields.io/badge/iOS-18.0+-blue.svg)](https://www.apple.com/ios)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 [![SPM Compatible](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://swift.org/package-manager)
 
@@ -16,7 +16,7 @@ A Swift package for managing app version upgrades and displaying release notes i
 
 ## Requirements
 
-- iOS 26.0 or later
+- iOS 18.0 or later
 - Swift 6.2 or later
 - Xcode 26.0 or later
 
@@ -38,7 +38,7 @@ Alternatively, add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/heyjaywilson/ReleaseKit", from: "1.0.0")
+    .package(url: "https://github.com/heyjaywilson/ReleaseKit", from: "0.1.0")
 ]
 ```
 
