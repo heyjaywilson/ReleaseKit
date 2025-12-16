@@ -34,7 +34,8 @@ public struct ReleaseDetail<Content: View>: View {
             )
           }
         }
-        .toolbarTitleDisplayMode(.large)
+        .navigationTitle(Text(release.title))
+        .toolbarTitleDisplayMode(.inlineLarge)
     }
     else {
       listContent
@@ -101,6 +102,12 @@ public struct ReleaseDetail<Content: View>: View {
           }
         }
       }
+    }
+  }
+
+  #Preview("In List") {
+    NavigationStack {
+      ReleaseVersionsListView(versions: Release.mockVersions)
     }
   }
 #endif
