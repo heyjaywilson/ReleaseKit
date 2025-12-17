@@ -73,7 +73,7 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider> where P
     }
   }
 
-  /// Manually check for updates
+  /// Manually check for update
   public func checkForUpdates() async {
     do {
       state = try await checker.check()
@@ -117,6 +117,12 @@ public final class VersionUpgradeService<V: Version, P: VersionProvider> where P
   }
 
   private func setupForegroundObserver() {
+    // Perform initial check on first run
+    Task { @MainActor in
+      await checkForUpdates()
+    }
+
+    // Set up observer for future foreground events
     foregroundObserver = NotificationCenter.default
       .addObserver(
         forName: UIApplication.willEnterForegroundNotification,
