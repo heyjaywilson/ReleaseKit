@@ -34,8 +34,10 @@ struct FeaturedSection: View {
   }
 }
 
-#Preview {
-  List {
-    FeaturedSection(entries: Entry.allEntries.filter({ $0.isFeatured }))
+#if DEBUG
+  #Preview {
+    List {
+      FeaturedSection(entries: Entry.allEntries.filter({ $0.isFeatured }))
+    }
   }
-}
+#endif

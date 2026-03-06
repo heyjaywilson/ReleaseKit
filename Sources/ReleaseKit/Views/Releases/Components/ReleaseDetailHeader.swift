@@ -55,27 +55,29 @@ public struct ReleaseDetailHeader: View {
   }
 }
 
-@available(iOS 26)
-#Preview("iOS 26") {
-  NavigationView {
-    List {
-      Text("Hello")
-    }
-    .toolbar {
-      ToolbarItem(placement: .navigation) {
-        Button("Back", systemImage: "chevron.left") {
-          print("Back")
+#if DEBUG
+  @available(iOS 26)
+  #Preview("iOS 26") {
+    NavigationView {
+      List {
+        Text("Hello")
+      }
+      .toolbar {
+        ToolbarItem(placement: .navigation) {
+          Button("Back", systemImage: "chevron.left") {
+            print("Back")
+          }
+        }
+        ToolbarItem(placement: .largeTitle) {
+          ReleaseDetailHeader(
+            icon: "megaphone",
+            title: "It's alive",
+            versionNumber: "1.0.0",
+            releaseDate: .now
+          )
         }
       }
-      ToolbarItem(placement: .largeTitle) {
-        ReleaseDetailHeader(
-          icon: "megaphone",
-          title: "It's alive",
-          versionNumber: "1.0.0",
-          releaseDate: .now
-        )
-      }
+      .toolbarTitleDisplayMode(.large)
     }
-    .toolbarTitleDisplayMode(.large)
   }
-}
+#endif
